@@ -1,8 +1,11 @@
-FROM mcr.microsoft.com/azure-cli:2.9.1 AS base
+FROM mcr.microsoft.com/azure-cli:2.40.0 AS base
 
 ENV TERRAFORM_VERSION 1.2.8
 ENV KUBECTL_VERSION 1.24.2
 ENV HELM_VERSION 3.9.4
+# TODO: Create new image that installs az CLI and node/npm/nvm
+ENV AZ_CLI_VERSION 2.39.0
+ENV NODE_VERSION 16.13.1
 
 WORKDIR /devops
 
@@ -10,7 +13,7 @@ FROM base AS requirements
 
 RUN apk update \
  && apk add bash-completion \
-            gnupg \
+            gnupg \ 
             tree \
             vim
 
@@ -20,8 +23,8 @@ RUN echo -e "\nsource /usr/share/bash-completion/bash_completion" >> ~/.bashrc
 
 FROM requirements AS terraform
 
-# Install az extensions
-az extensions 
+# TODO: Install az extensions
+#az extensions 
 
 # Install Terraform
 RUN curl -LO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
@@ -56,10 +59,3 @@ RUN mv linux-amd64/helm /usr/local/bin/
 # Configure Helm completion
 RUN echo -e "source <(helm completion bash)" >> ~/.bashrc
 RUN helm completion bash >/etc/bash_completion.d/helm
-
-FROM kubernetes AS scripts
-
-# Copy AKS download scripts
-COPY aks-config-download.sh .
-RUN chmod +x aks-config-download.sh
-RUN mv aks-config-download.sh /usr/local/bin/aks-config-download

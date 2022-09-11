@@ -1,0 +1,38 @@
+# Overview
+
+# Getting Started
+
+- Initialize the environment
+    ```bash
+    > source ./platform/init.sh
+    ```
+- Deploy the platform
+    ```bash
+    > source ./platform/apply.sh
+    ```
+- Deploy the demo apps
+    ```bash
+    > source ./apps/deploy.sh
+    ```
+
+# Tearing down
+
+- Destroy all resources
+    ```bash
+    > source ./destroy.sh
+    ```
+- (Optional) Remove Terraform supporting resources
+    ```bash
+    > source ./platform/uninit.sh
+    ```
+
+
+# TODOs
+
+- #1 - Add ingress
+- #2 - Add the demo API app
+- Add Azure Policy for AKS
+- Resize AKS node subnet (max 1000 nodes per cluster)
+- Support multiple node pools (rename resource group to "*-nodepool-default")
+- Alerts for AKS cluster (see "Enable recommended alert rules" in portal)
+- Add jump box

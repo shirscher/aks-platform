@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: omni-catalog-api-service
+  labels:
+    app: omni-catalog-api
+    slot: {{SLOT}}
+spec:
+  ports:
+  - name: http
+    port: 8080
+  selector:
+    app: omni-catalog-api
+    slot: {{SLOT}}

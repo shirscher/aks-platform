@@ -14,12 +14,18 @@ resource "azurerm_virtual_network" "vnet" {
   address_space       = var.vnet_address_space
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
+  tags = {
+    Environment = var.environment.name
+  }
 }
 
 resource "azurerm_network_watcher" "network_watcher" {
   name                = format("netwatcher-%s-%s01", var.department.short_name, var.environment.postfix)
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
+  tags = {
+    Environment = var.environment.name
+  }
 }
 
 #
@@ -85,6 +91,10 @@ resource "azurerm_public_ip" "ip" {
   resource_group_name = azurerm_resource_group.bastion_rg.name
   allocation_method   = "Static"
   sku                 = "Standard"
+
+  tags = {
+    Environment = var.environment.name
+  }
 }
 
 resource "azurerm_bastion_host" "bastion" {
@@ -96,6 +106,10 @@ resource "azurerm_bastion_host" "bastion" {
     name                 = "configuration"
     subnet_id            = azurerm_subnet.bastion_subnet.id
     public_ip_address_id = azurerm_public_ip.ip.id
+  }
+
+  tags = {
+    Environment = var.environment.name
   }
 }
 
@@ -110,4 +124,7 @@ resource "azurerm_private_dns_zone" "private_dns_zones" {
   for_each            = var.private_link_dns
   name                = each.key
   resource_group_name = azurerm_resource_group.rg.name
+  tags = {
+    Environment = var.environment.name
+  }
 }

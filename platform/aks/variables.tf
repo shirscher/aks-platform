@@ -16,6 +16,18 @@ variable "department" {
   })
 }
 
+variable "resource_group_name" {
+  type = string
+}
+
+variable "name" {
+  type = string
+}
+
+variable "node_resource_group_name" {
+  type = string
+}
+
 variable "log_analytics_workspace_id" {
   type = string
 }

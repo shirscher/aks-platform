@@ -8,15 +8,6 @@ data "azurerm_subscription" "current" {}
 # Resources
 #
 
-resource "azurerm_resource_group" "rg" {
-  name     = format("rg-%s-policy-%s01", var.department.short_name, var.environment.postfix)
-  location = var.location
-  tags = {
-    Environment = var.environment.name
-    Department  = var.department.name
-  }
-}
-
 resource "azurerm_subscription_policy_assignment" "require_rg_environment_tag" {
   name                 = "require-rg-environment-tag"
   subscription_id      = data.azurerm_subscription.current.id
@@ -44,7 +35,7 @@ resource "azurerm_subscription_policy_assignment" "inherit_rg_environment_tag" {
   identity {
     type = "SystemAssigned"
   }
-  parameters           = <<PARAMETERS
+  parameters = <<PARAMETERS
                           {
                             "tagName": {
                               "value": "Environment"

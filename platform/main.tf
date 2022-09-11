@@ -36,14 +36,36 @@ module "vnet" {
 module "aks" {
   source = "./aks"
 
+  resource_group_name = local.aks_resource_group_name
+  name                = local.aks_name
+
   location                   = var.location
   environment                = var.environment
   department                 = var.department
   log_analytics_workspace_id = module.logging.log_analytics_workspace_id
 
-  nodepool_subnet_id = module.vnet.aks_node_subnet_id
+  nodepool_subnet_id       = module.vnet.aks_node_subnet_id
+  node_resource_group_name = local.aks_node_resource_group_name
+
   pod_cidr           = var.pod_cidr
   service_cidr       = var.service_cidr
   dns_service_ip     = var.dns_service_ip
   docker_bridge_cidr = var.docker_bridge_cidr
 }
+
+data "azurerm_kubernetes_cluster" "default" {
+  depends_on          = [module.aks] # refresh cluster state before reading
+  name                = local.aks_name
+  resource_group_name = local.aks_resource_group_name
+}
+
+module "aks-config" {
+  depends_on   = [module.aks]
+  source       = "./aks-config"
+  cluster_name = local.aks_name
+  kubeconfig   = data.azurerm_kubernetes_cluster.default.kube_config_raw
+}
+
+# module "api_gateway"
+# module "api_management_internal"
+# module "api_management_external"

@@ -1,3 +1,7 @@
+#
+# Variables
+#
+
 variable "location" {
 }
 
@@ -58,4 +62,14 @@ variable "dns_service_ip" {
 variable "docker_bridge_cidr" {
   type        = string
   description = "Specifies the CIDR notation IP range assigned to the Docker bridge network. It must not overlap with any Subnet IP ranges or the Kubernetes service address range."
+}
+
+#
+# Locals
+#
+
+locals {
+  aks_resource_group_name      = format("rg-%s-aks-%s01", var.department.short_name, var.environment.postfix)
+  aks_name                     = format("aks-%s-%s01", var.department.short_name, var.environment.postfix)
+  aks_node_resource_group_name = format("rg-%s-aks-%s01-nodes", var.department.short_name, var.environment.postfix)
 }

@@ -3,7 +3,7 @@
 #
 
 resource "azurerm_resource_group" "aks_rg" {
-  name     = format("rg-%s-aks-%s01", var.department.short_name, var.environment.postfix)
+  name     = var.resource_group_name
   location = var.location
   tags = {
     Environment = var.environment.name
@@ -11,14 +11,14 @@ resource "azurerm_resource_group" "aks_rg" {
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = format("aks-%s-%s01", var.department.short_name, var.environment.postfix)
+  name                = var.name
   location            = azurerm_resource_group.aks_rg.location
   resource_group_name = azurerm_resource_group.aks_rg.name
   dns_prefix          = format("aks-%s-%s01", var.department.short_name, var.environment.postfix)
   #dns_prefix_private_cluster = format("aks-%s-%s01", var.department.short_name, var.environment.postfix)
   automatic_channel_upgrade = "patch" # rapid, node-image, stable, none
   #api_server_authorized_ip_ranges = [""]
-  node_resource_group = format("%s-nodes", azurerm_resource_group.aks_rg.name)
+  node_resource_group = var.node_resource_group_name
   sku_tier            = "Free" # Free, Paid
 
   default_node_pool {
@@ -55,6 +55,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   oms_agent {
     log_analytics_workspace_id = var.log_analytics_workspace_id
   }
+
+  tags = {
+    Environment = var.environment.name
+  }
 }
 
 resource "azurerm_resource_group" "acr_rg" {
@@ -68,6 +72,10 @@ resource "azurerm_container_registry" "acr" {
   location            = azurerm_resource_group.acr_rg.location
   sku                 = "Basic"
   admin_enabled       = false
+  
+  tags = {
+    Environment = var.environment.name
+  }
 }
 
 resource "azurerm_role_assignment" "acr_role_assignment" {
