@@ -35,8 +35,6 @@ terraform {
     container_name       = "terraform"     # Must match in setup/sorage-account-deploy.bicep
     key                  = "prod.terraform.tfstate"
     use_azuread_auth     = true
-    # MSI auth not working in WSL
-    #use_msi              = true
   }
 }
 
@@ -48,18 +46,44 @@ provider "azurerm" {
   }
 }
 
+data "terraform_remote_state" "aks_remote" {
+  backend = "azurerm"
+  config = {
+    resource_group_name  = "rg-devops-p01" # Must match in setup/sorage-account-deploy.bicep
+    storage_account_name = "sadevopsp01"   # Must match in setup/sorage-account-deploy.bicep
+    container_name       = "terraform"     # Must match in setup/sorage-account-deploy.bicep
+    key                  = "prod.terraform.tfstate"
+    use_azuread_auth     = true
+  }
+}
+
 provider "helm" {
   kubernetes {
-    config_path = "~/.kube/config"
+    host                   = module.aks.host
+    username               = module.aks.username
+    password               = module.aks.password
+    client_certificate     = module.aks.client_certificate
+    client_key             = module.aks.client_key
+    cluster_ca_certificate = module.aks.cluster_ca_certificate
   }
 }
 
 provider "kubernetes" {
-  config_path = "~/.kube/config"
+  host                   = module.aks.host
+  username               = module.aks.username
+  password               = module.aks.password
+  client_certificate     = module.aks.client_certificate
+  client_key             = module.aks.client_key
+  cluster_ca_certificate = module.aks.cluster_ca_certificate
 }
 
 provider "kubectl" {
   kubernetes {
-    config_path = "~/.kube/config"
+    host                   = module.aks.host
+    username               = module.aks.username
+    password               = module.aks.password
+    client_certificate     = module.aks.client_certificate
+    client_key             = module.aks.client_key
+    cluster_ca_certificate = module.aks.cluster_ca_certificate
   }
 }

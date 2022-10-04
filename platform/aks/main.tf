@@ -84,3 +84,8 @@ resource "azurerm_role_assignment" "acr_role_assignment" {
   scope                            = azurerm_container_registry.acr.id
   skip_service_principal_aad_check = true
 }
+
+resource "local_file" "kubeconfig" {
+  content = azurerm_kubernetes_cluster.aks.kube_config_raw
+  filename  = pathexpand("~/.kube/config")
+}

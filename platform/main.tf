@@ -53,17 +53,13 @@ module "aks" {
   docker_bridge_cidr = var.docker_bridge_cidr
 }
 
-data "azurerm_kubernetes_cluster" "default" {
-  depends_on          = [module.aks] # refresh cluster state before reading
-  name                = local.aks_name
-  resource_group_name = local.aks_resource_group_name
-}
-
 module "aks-config" {
-  depends_on   = [module.aks]
-  source       = "./aks-config"
-  cluster_name = local.aks_name
-  kubeconfig   = data.azurerm_kubernetes_cluster.default.kube_config_raw
+  depends_on               = [module.aks]
+  source                   = "./aks-config"
+  cluster_name             = local.aks_name
+  node_location            = var.location
+  node_resource_group_name = local.aks_node_resource_group_name
+  ip_domain_name_prefix    = local.aks_name
 }
 
 # module "api_gateway"

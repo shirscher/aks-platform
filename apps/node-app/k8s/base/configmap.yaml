@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: node-app-api-configmap
+  labels:
+    system: node-app
+    app: node-app-api
+    environment: production
+data:
+  environment: "Production"

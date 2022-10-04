@@ -1,14 +1,16 @@
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: omni-catalog-api-hpa
+  name: node-app-api-hpa
   labels:
-    app: omni-catalog-api
+    system: node-app
+    app: node-app-api
+    environment: production
 spec:
  scaleTargetRef:
    apiVersion: apps/v1
    kind: Deployment
-   name: omni-catalog-api-deployment
+   name: node-app-api-deployment
  minReplicas: 3
  maxReplicas: 8
  targetCPUUtilizationPercentage: 50

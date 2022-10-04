@@ -69,49 +69,49 @@ resource "azurerm_subnet" "api_mgmt_subnet" {
 #
 # Bastion + Jump Box
 #
-resource "azurerm_resource_group" "bastion_rg" {
-  name     = format("rg-%s-jumpbox-%s01", var.department.short_name, var.environment.postfix)
-  location = var.location
-  tags = {
-    Environment = var.environment.name
-    Team        = "Platform"
-  }
-}
+# resource "azurerm_resource_group" "bastion_rg" {
+#   name     = format("rg-%s-jumpbox-%s01", var.department.short_name, var.environment.postfix)
+#   location = var.location
+#   tags = {
+#     Environment = var.environment.name
+#     Team        = "Platform"
+#   }
+# }
 
-resource "azurerm_subnet" "bastion_subnet" {
-  name                 = "AzureBastionSubnet" # Subnet name MUST be this
-  resource_group_name  = azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = [var.bastion_subnet_prefix]
-}
+# resource "azurerm_subnet" "bastion_subnet" {
+#   name                 = "AzureBastionSubnet" # Subnet name MUST be this
+#   resource_group_name  = azurerm_resource_group.rg.name
+#   virtual_network_name = azurerm_virtual_network.vnet.name
+#   address_prefixes     = [var.bastion_subnet_prefix]
+# }
 
-resource "azurerm_public_ip" "ip" {
-  name                = format("pip-%s-bastion-%s01", var.department.short_name, var.environment.postfix)
-  location            = azurerm_resource_group.bastion_rg.location
-  resource_group_name = azurerm_resource_group.bastion_rg.name
-  allocation_method   = "Static"
-  sku                 = "Standard"
+# resource "azurerm_public_ip" "ip" {
+#   name                = format("pip-%s-bastion-%s01", var.department.short_name, var.environment.postfix)
+#   location            = azurerm_resource_group.bastion_rg.location
+#   resource_group_name = azurerm_resource_group.bastion_rg.name
+#   allocation_method   = "Static"
+#   sku                 = "Standard"
 
-  tags = {
-    Environment = var.environment.name
-  }
-}
+#   tags = {
+#     Environment = var.environment.name
+#   }
+# }
 
-resource "azurerm_bastion_host" "bastion" {
-  name                = format("bastion-%s-%s01", var.department.short_name, var.environment.postfix)
-  location            = azurerm_resource_group.bastion_rg.location
-  resource_group_name = azurerm_resource_group.bastion_rg.name
+# resource "azurerm_bastion_host" "bastion" {
+#   name                = format("bastion-%s-%s01", var.department.short_name, var.environment.postfix)
+#   location            = azurerm_resource_group.bastion_rg.location
+#   resource_group_name = azurerm_resource_group.bastion_rg.name
 
-  ip_configuration {
-    name                 = "configuration"
-    subnet_id            = azurerm_subnet.bastion_subnet.id
-    public_ip_address_id = azurerm_public_ip.ip.id
-  }
+#   ip_configuration {
+#     name                 = "configuration"
+#     subnet_id            = azurerm_subnet.bastion_subnet.id
+#     public_ip_address_id = azurerm_public_ip.ip.id
+#   }
 
-  tags = {
-    Environment = var.environment.name
-  }
-}
+#   tags = {
+#     Environment = var.environment.name
+#   }
+# }
 
 # TODO: Jumpbox VM
 # Using AAD credentials? https://docs.microsoft.com/en-us/azure/active-directory/devices/howto-vm-sign-in-azure-ad-linux
@@ -120,11 +120,11 @@ resource "azurerm_bastion_host" "bastion" {
 # Private Endpoint DNS
 #
 
-resource "azurerm_private_dns_zone" "private_dns_zones" {
-  for_each            = var.private_link_dns
-  name                = each.key
-  resource_group_name = azurerm_resource_group.rg.name
-  tags = {
-    Environment = var.environment.name
-  }
-}
+# resource "azurerm_private_dns_zone" "private_dns_zones" {
+#   for_each            = var.private_link_dns
+#   name                = each.key
+#   resource_group_name = azurerm_resource_group.rg.name
+#   tags = {
+#     Environment = var.environment.name
+#   }
+# }

@@ -29,10 +29,12 @@
 
 # TODOs
 
-- #1 - Add ingress
-- #2 - Add the demo API app
+X Add ingress
+X Add the demo API app
+
 - Add Azure Policy for AKS
 - Resize AKS node subnet (max 1000 nodes per cluster)
 - Support multiple node pools (rename resource group to "*-nodepool-default")
 - Alerts for AKS cluster (see "Enable recommended alert rules" in portal)
+- Use spot instances for node pools
 - Add jump box

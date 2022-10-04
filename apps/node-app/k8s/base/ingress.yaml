@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: node-app-api-ingress
+  labels:
+    system: node-app
+    app: node-app-api
+    environment: production
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: /node-app/api(/|$)(.*)
+        backend:
+          service:
+            name: node-app-api-service
+            port:
+              number: 80

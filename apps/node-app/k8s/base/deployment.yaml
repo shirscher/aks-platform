@@ -1,27 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: omni-catalog-api-{{SLOT}}-deployment
+  name: node-app-api-deployment
   labels:
-    app: omni-catalog-api
-    slot: {{SLOT}}
+    system: node-app
+    app: node-app-api
+    environment: production
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: omni-catalog-api
-      slot: {{SLOT}}
+      app: node-app-api
   template:
     metadata:
       labels:
-        app: omni-catalog-api
-        slot: {{SLOT}}
+        system: node-app
+        app: node-app-api
+        environment: production
     spec:
       containers:
-        - name: omni-catalog-api-{{SLOT}}-container
-          image: omni-catalog-api:{{BUILD_NUMBER}}
+        - name: node-app-api-container
+          image: acromnip01.azurecr.io/node-app-api:0.0.0.0
           ports:
             - containerPort: 8080
+          env:
+            - name: NESTJS_PORT
+              value: "8080"
           readinessProbe:
             httpGet:
               path: /system/ping
