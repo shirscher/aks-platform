@@ -6,4 +6,5 @@ resources:
 - service.yaml
 - hpa.yaml
 - ingress.yaml
+- serviceaccount.yaml
 namespace: node-app

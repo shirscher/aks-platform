@@ -7,6 +7,8 @@ OWNER_USER_ID=$(az ad signed-in-user show -o tsv --query id)
 SERVICE_PRINCIPAL_NAME=sp-terraform-p
 RESOURCE_GROUP_NAME=rg-devops-p01
 
+set -e
+
 echo "Create storage account for Terraform state"
 az deployment sub create -f ./init/storage-account-deploy.bicep -l eastus2 \
     --parameters storageBlobDataOwnerRoleId=$STORAGE_BLOB_DATA_OWNER_ID \

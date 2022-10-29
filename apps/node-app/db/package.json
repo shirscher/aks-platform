@@ -1,0 +1,21 @@
+{
+   "name": "node-app-db",
+   "version": "1.0.0",
+   "description": "Database project using TypeORM migrations",
+   "scripts": {
+      "typeorm": "typeorm-ts-node-commonjs",
+      "start": "ts-node src/index.ts"
+   },
+   "author": "",
+   "license": "Unlicense",
+   "devDependencies": {
+      "ts-node": "10.7.0",
+      "@types/node": "^16.11.10",
+      "typescript": "4.5.2"
+   },
+   "dependencies": {
+      "typeorm": "0.3.10",
+      "reflect-metadata": "^0.1.13",
+      "mssql": "^7.3.0"
+   }
+}

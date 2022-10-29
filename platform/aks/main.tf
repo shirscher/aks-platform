@@ -1,5 +1,5 @@
 #
-# Resources
+# AKS
 #
 
 resource "azurerm_resource_group" "aks_rg" {
@@ -20,6 +20,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
   #api_server_authorized_ip_ranges = [""]
   node_resource_group = var.node_resource_group_name
   sku_tier            = "Free" # Free, Paid
+
+  workload_identity_enabled = true
+  oidc_issuer_enabled = true
 
   default_node_pool {
     # ignore_changes = [ 
@@ -61,6 +64,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 }
 
+#
+# Azure Container Registry
+#
+
 resource "azurerm_resource_group" "acr_rg" {
   name     = format("rg-%s-acr-%s01", var.department.short_name, var.environment.postfix)
   location = var.location
@@ -84,6 +91,10 @@ resource "azurerm_role_assignment" "acr_role_assignment" {
   scope                            = azurerm_container_registry.acr.id
   skip_service_principal_aad_check = true
 }
+
+#
+# Export kubeconfig (for local development)
+#
 
 resource "local_file" "kubeconfig" {
   content = azurerm_kubernetes_cluster.aks.kube_config_raw

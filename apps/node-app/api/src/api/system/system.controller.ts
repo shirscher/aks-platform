@@ -1,14 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Inject } from '@nestjs/common';
+import { HealthCheckResponse } from '../../domain/health/HealthCheckResponse';
+import { HealthCheckService } from '../../domain/health/HealthCheckService';
 import { SystemService } from './system.service';
-import { HealthCheckService } from './healthCheck.service';
 import { SystemInfoResponse } from './SystemInfoResponse';
-import { HealthCheckResponse } from './HealthCheckResponse';
 
 @Controller('system')
 export class SystemController {
     constructor(
         private systemService: SystemService,
-        private healthCheckService: HealthCheckService) { }
+        @Inject("HealthCheckService") private healthCheckService: HealthCheckService) { }
 
     @Get()
     async getSystemInfo(): Promise<SystemInfoResponse> {

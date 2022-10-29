@@ -1,10 +1,12 @@
+#
+# Nginx Ingress 
+#
 resource "kubernetes_namespace" "nginx" {
   metadata {
     name = "ingress-nginx"
   }
 }
 
-# Install Nginx Ingress using Helm Chart
 resource "helm_release" "ingress_nginx" {
   name       = "ingress-nginx"
   namespace  = kubernetes_namespace.nginx.metadata[0].name
@@ -40,4 +42,20 @@ resource "helm_release" "ingress_nginx" {
   #set {
   #  name = "kubernetes.io/ingress.class" = "public-nginx"
   #}
+}
+
+#
+# ArgoCD
+#
+resource "kubernetes_namespace" "argocd" {
+  metadata {
+    name = "argocd"
+  }
+}
+
+resource "helm_release" "argocd" {
+  name       = "argocd"
+  namespace  = kubernetes_namespace.argocd.metadata[0].name
+  repository = "https://argoproj.github.io/argo-helm"
+  chart      = "argo-cd"
 }

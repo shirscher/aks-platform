@@ -6,7 +6,7 @@ APP_NAME=node-app-api
 set -e
 
 echo "Deploying infrastructure..."
-$SCRIPT_PATH/infra/apply.sh
+terraform -chdir=./infra apply -var-file=prod.tfvars -auto-approve
 
 echo "Publishing database"
 
@@ -24,9 +24,19 @@ docker tag ${APP_NAME} ${ACR_NAME}.azurecr.io/${APP_NAME}:${BUILD_NUMBER}
 az acr login --name ${ACR_NAME}
 docker push ${ACR_NAME}.azurecr.io/${APP_NAME}:${BUILD_NUMBER}
 
-echo "Deploying Kubernetes manifests for API..."
-yq eval ".images[0].newTag = \"${BUILD_NUMBER}\"" $SCRIPT_PATH/k8s/overlays/prod/kustomization.yaml > $SCRIPT_PATH/k8s/overlays/prod/temp.yaml
-mv -f $SCRIPT_PATH/k8s/overlays/prod/temp.yaml $SCRIPT_PATH/k8s/overlays/prod/kustomization.yaml
-kubectl apply -k $SCRIPT_PATH/k8s/overlays/prod
+#echo "Deploying Kubernetes manifests for API..."
+#yq eval ".images[0].newTag = \"${BUILD_NUMBER}\"" $SCRIPT_PATH/k8s/overlays/prod/kustomization.yaml > $SCRIPT_PATH/k8s/overlays/prod/temp.yaml
+#mv -f $SCRIPT_PATH/k8s/overlays/prod/temp.yaml $SCRIPT_PATH/k8s/overlays/prod/kustomization.yaml
+#kubectl apply -k $SCRIPT_PATH/k8s/overlays/prod
+
+echo "Deploying Helm chart..."
+NAMESPACE=node-app
+# TODO: won't currently work as root user
+#GIT_COMMIT=$(git rev-parse --short HEAD)
+GIT_COMMIT=ffffff
+kubectl apply -f ./chart/namespace.yaml
+# TODO: helm upgrade if exists, otherwise helm install
+helm upgrade node-app-api --namespace "$NAMESPACE" -f ./chart/values.yaml --set gitCommit=$GIT_COMMIT --set buildNumber=$BUILD_NUMBER ./chart
+#helm install node-app-api --namespace "$NAMESPACE" -f ./chart/values.yaml --set gitCommit=$GIT_COMMIT --set buildNumber=$BUILD_NUMBER ./chart
 
 echo "Done!"

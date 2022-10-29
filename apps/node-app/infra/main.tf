@@ -1,21 +1,35 @@
 resource "azurerm_resource_group" "rg" {
-    name = "rg-node-api-p01"
+  name     = local.resource_group_name
+  location = var.location
 }
 
-module "key_vault" {
-    source = "[terraform registry?]/key_vault"
+#module "key_vault" {
+#  key_vault_name = local.key_vault_name
+#}
 
-    app_name = "node-api"
+module "sql_database" {
+  source = "./sql-database"
+
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sql_server_name     = local.sql_server_name
+  database_name       = local.database_name
+  admin_username      = var.admin_username
+  admin_password      = var.admin_password
 }
 
-module "sql_server" {
-    source = ""
+module "managed_identity" {
+  source = "./managed-identity"
+
+  name                = local.managed_identity_name
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
 }
 
-module "msi" {
-    source = ""
-}
+#module "static_web_storage" {
+#  source = "./static-web-storage"  
+#}
 
-module "app_insights" {
-    
-}
+#module "app_insights" {
+#
+#}

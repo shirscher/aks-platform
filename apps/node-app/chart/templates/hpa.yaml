@@ -1,0 +1,15 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Chart.Name }}-hpa
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "utils.labels" . | indent 4 }}
+spec:
+ scaleTargetRef:
+   apiVersion: apps/v1
+   kind: Deployment
+   name: {{ .Chart.Name }}-deployment
+ minReplicas: 3
+ maxReplicas: 8
+ targetCPUUtilizationPercentage: 50

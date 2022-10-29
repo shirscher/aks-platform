@@ -1,5 +1,5 @@
 {
-    "forwardPorts": [8080],
+    "forwardPorts": [8080, 1433],
     "build": { "dockerfile": "Dockerfile" },
     "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ]
 }

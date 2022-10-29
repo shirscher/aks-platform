@@ -5,6 +5,4 @@ metadata:
   labels:
     system: node-app
     app: node-app-api
-    environment: production
 data:
-  environment: "Production"

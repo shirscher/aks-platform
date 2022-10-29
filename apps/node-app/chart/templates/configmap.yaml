@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-configmap
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "utils.labels" . | indent 4 }}
+data:
+  APP_VERSION: {{ .Chart.AppVersion | quote }}
+  BUILD_NUMBER: {{ .Values.buildNumber | quote }}
+  HELM_RELEASE: {{ .Release.Name | quote }}
+  GIT_COMMIT: {{ .Values.gitCommit | quote }}
+  ENVIRONMENT: {{ .Values.environment | quote }}
+  NESTJS_PORT: {{ .Values.port | quote }}
+  DATABASE_SERVER: {{ .Values.database.server | quote }}
+  DATABASE_NAME: {{ .Values.database.name | quote }}
+  DATABASE_AUTH_TYPE: {{ .Values.database.authType | quote }}
+  DATABASE_USERNAME: {{ .Values.database.userName | quote }}
+  DATABASE_PASSWORD: {{ .Values.database.password | quote }}
+  DATABASE_HEALTHCHECK_QUERY: {{ .Values.database.healthCheckQuery | quote }}
+  MANAGED_IDENTITY_CLIENT_ID: {{ .Values.serviceAccount.managedIdentity.tenantId | quote }}
+  MANAGED_IDENTITY_TENANT_ID: {{ .Values.serviceAccount.managedIdentity.tenantId | quote }}

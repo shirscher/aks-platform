@@ -3,8 +3,6 @@ import { SystemInfoResponse } from './SystemInfoResponse';
 import * as os from "os";
 import axios from "axios";
 
-const VERSION = "1.0.0";
-
 @Injectable()
 export class SystemService {
     private ExternalIpServiceUrl: string = "icanhazip.com";
@@ -17,7 +15,7 @@ export class SystemService {
         var ip = await this.getExternalIp();
 
         const info = {
-            version: VERSION,
+            version: process.env.APP_VERSION,
             build: process.env.BUILD_NUMBER,
             nodeVersion: process.version,
             hostName: os.hostname(),

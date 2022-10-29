@@ -26,15 +26,44 @@
     > source ./platform/uninit.sh
     ```
 
+# Features
+
+- Fully private VNet
+    - All traffic stays in network using Private Endpoints
+    - All ingress HTTP traffic must go through Azure App Gateway WAF (TODO)
+    - No systems, even Azure SAAS services, have publicly addressable routes other than the public App Gateway
+    - End to end encryption (TODO)
+- Predefined IAM configuration with groups and test users to support a compliant separation of concerns (TODO)
+- Azure Policies defined for all resources used in  (In Progress)
+- Subscription budget with alerts (In Progress)
+- Azure Kubernetes Service for hosting all stateless apps
+    - Nginx or Azure App Gateway (TODO) ingress options
+    - ArgoCD 
+    - End-to-end transport encryption with cert-manager (TODO)
+    - (Optional) Keycloak server for user and API authentication (TODO)
+- Angular API w/ NestJS + Azure SQL Server back end (In Progress)
+    - AAD based OAuth for API integration, 
+    - Helm based manifest deploys
+    - 
+- Automated operation runbooks
+    - Auto rotation of secrets
+    - Auto refresh of TLS certs
 
 # TODOs
 
 X Add ingress
-X Add the demo API app
+X Add the demo node API
+X Add ArgoCD to startup
 
+- Add helm option for demo node api
+- Database migrations
+- Node app infrastructure - DB, MSI
 - Add Azure Policy for AKS
 - Resize AKS node subnet (max 1000 nodes per cluster)
 - Support multiple node pools (rename resource group to "*-nodepool-default")
 - Alerts for AKS cluster (see "Enable recommended alert rules" in portal)
 - Use spot instances for node pools
 - Add jump box
+- Update SQL Server to only allow AAD admins
+- Apply policy to AKS to address security issue when using kubenet w/ AAD Pod Identity: https://learn.microsoft.com/en-us/azure/app-service/tutorial-connect-msi-sql-database?tabs=windowsclient%2Cef%2Cdotnet
+- 

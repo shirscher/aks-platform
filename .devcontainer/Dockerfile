@@ -1,24 +1,47 @@
-FROM ubuntu:22.04 AS base
+ARG OS_VERSION=20.04
+FROM ubuntu:${OS_VERSION} AS base
+
+# Needs to be set to your host user UID and GID
+# so that all files created in the container are
+# owned by your account
+ARG HOST_USER_UID=1000
+ARG HOST_USER_GID=1000
+
 USER root
 
 WORKDIR /devops
 
-FROM base AS requirements
+# Create non-root user
+RUN set -ex \
+    && groupadd -g $HOST_USER_GID devuser \
+    && useradd -lm -u $HOST_USER_UID -g $HOST_USER_GID devuser
 
-RUN apt update \
+# Install base packages
+RUN set -ex \
+ && apt update \
  && apt-get -y install \
+    apt-transport-https \
     bash-completion \
+    ca-certificates \
     curl \
-    gnupg \ 
+    gnupg \
+    lsb-release \ 
+    jq \
     software-properties-common \
+    sudo \
+    tmux \
     tree \
     vim \
-    unzip \
-    jq
+    unzip
 
 # Configure completion
 RUN mkdir -p /etc/bash_completion.d/ && \
     echo -e "\nsource /usr/share/bash-completion/bash_completion" >> ~/.bashrc
+
+# Install MS cert
+RUN curl -sL https://packages.microsoft.com/keys/microsoft.asc | \
+    gpg --dearmor | \
+    tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null
 
 # Install Docker
 RUN curl -sSL https://get.docker.com/ | sh
@@ -28,9 +51,12 @@ RUN add-apt-repository ppa:rmescandon/yq \
  && apt update \
  && apt install yq -y
 
+# Install git
+RUN apt-get -y install git
+
 # Install Node
-ENV NODE_VERSION 16.17.0
-ENV NPM_VERSION 8.15.0	
+ARG NODE_VERSION=16.17.0
+ARG NPM_VERSION=8.15.0	
 
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash \
  && apt-get -y install nodejs \
@@ -38,7 +64,7 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash \
  && n install ${NODE_VERSION}
 
 # Install Terraform
-ENV TERRAFORM_VERSION 1.2.8
+ARG TERRAFORM_VERSION=1.2.8
 
 RUN curl -LO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
  && unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip \
@@ -52,7 +78,7 @@ RUN curl -LO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terra
 # && mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
 
 # Install Kubectl
-ENV KUBECTL_VERSION 1.24.2
+ARG KUBECTL_VERSION=1.24.2
 
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
  && chmod +x kubectl \
@@ -62,7 +88,7 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBECT
  && kubectl completion bash >/etc/bash_completion.d/kubectl
 
 # Install Helm
-ENV HELM_VERSION 3.9.4
+ARG HELM_VERSION=3.9.4
 
 RUN curl -LO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
  && tar -xvzf helm-v${HELM_VERSION}-linux-amd64.tar.gz \
@@ -74,21 +100,21 @@ RUN curl -LO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz \
  && helm completion bash >/etc/bash_completion.d/helm
 
 # Install az CLI
-ENV AZ_CLI_VERSION 2.40.0-1~jammy
+ARG AZ_CLI_VERSION=2.40.0-1
 
-RUN apt-get -y install ca-certificates curl apt-transport-https lsb-release gnupg \
- && curl -sL https://packages.microsoft.com/keys/microsoft.asc | \
-    gpg --dearmor | \
-    tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null \
- && AZ_REPO=$(lsb_release -cs) \
- && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | \
+RUN OS_CODENAME=$(lsb_release -cs) \
+ && AZ_FULL_VERSION=${AZ_CLI_VERSION}~${OS_CODENAME} \
+ && echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ ${OS_CODENAME} main" | \
     tee /etc/apt/sources.list.d/azure-cli.list \
  && apt-get update \
  && apt-cache madison azure-cli \
- && apt-get -y install azure-cli=${AZ_CLI_VERSION}
+ && apt-get -y install azure-cli=${AZ_FULL_VERSION}
 
-# Install git
-RUN apt-get -y install git
+# Install ArgoCD CLI
+ARG ARGOCD_VERSION=v2.5.0 # Select desired TAG from https://github.com/argoproj/argo-cd/releases
+RUN curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/$ARGOCD_VERSION/argocd-linux-amd64 \
+ && sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd \
+ && rm argocd-linux-amd64
 
-#USER rootless
-#ENV DOCKER_HOST=unix:///var/run/user/1000/docker.sock
+# TODO: If run as root then npm doesn't work, if run as user then nested docker doesn't work (for SQL and API image builds)
+#USER devuser

@@ -1,0 +1,21 @@
+systemName: node-app
+environment: "Production"
+buildNumber: "" # Passed in from build script, used as image tag
+gitCommit: "" # Passed in from build script
+port: 8080
+
+image:
+  repository: acromnip01.azurecr.io/node-app-api
+
+serviceAccount:
+  managedIdentity:
+    tenantId: "fe748f22-5d9d-46ea-bb87-0d3c2abc74ae" # TODO: Pull dynamically (deploy using Terraform and grab from state?)
+    clientId: "e6189692-21f1-4342-aad7-f0e455afcc22" # TODO: Pull dynamically (deploy using Terraform and grab from state?)
+
+database:
+  server: "sqlsvr-node-api-p01.database.windows.net"
+  name: "sqldb-node-api-p01"
+  authType: "password"
+  userName: "4dm1n157r470r" # TODO: Pull dynamically (deploy using Terraform and grab from state?)
+  password: "4-v3ry-53cr37-p455w0rd" # TODO: Pull dynamically (deploy using Terraform and grab from state?)
+  healthCheckQuery: SELECT @@VERSION

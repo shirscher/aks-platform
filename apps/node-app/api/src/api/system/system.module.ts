@@ -1,10 +1,19 @@
 import { Module } from '@nestjs/common';
-import { HealthCheckService } from './healthCheck.service';
+import { SqlHealthCheckProvider } from '../../infra/data/SqlHealthCheckProvider';
+import { HealthCheckService } from '../../domain/health/HealthCheckService';
 import { SystemController } from './system.controller';
 import { SystemService } from './system.service';
 
 @Module({
   controllers: [SystemController],
-  providers: [SystemService, HealthCheckService]
+  providers: [
+    SystemService,
+    SqlHealthCheckProvider,
+    {
+      provide: 'HealthCheckService',
+      useFactory: (...providers) => new HealthCheckService(providers),
+      inject: [SqlHealthCheckProvider]
+    }
+  ]
 })
 export class SystemModule {}
