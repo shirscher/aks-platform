@@ -6,9 +6,10 @@ APP_NAME=node-app-api
 set -e
 
 echo "Deploying infrastructure..."
-terraform -chdir=./infra apply -var-file=prod.tfvars -auto-approve
+terraform -chdir=${SCRIPT_PATH}/infra apply -var-file=prod.tfvars -auto-approve
 
-echo "Publishing database"
+echo "Publishing database..."
+npm run typeorm:migration:run
 
 echo "Building UI..."
 
@@ -26,12 +27,9 @@ docker push ${ACR_NAME}.azurecr.io/${APP_NAME}:${BUILD_NUMBER}
 
 echo "Deploying Helm chart..."
 NAMESPACE=node-app
-# TODO: won't currently work as root user
-#GIT_COMMIT=$(git rev-parse --short HEAD)
+GIT_COMMIT=$(git rev-parse --short HEAD)
 GIT_COMMIT=ffffff
-kubectl apply -f ./chart/namespace.yaml
-# TODO: helm upgrade if exists, otherwise helm install
-helm upgrade node-app-api --namespace "$NAMESPACE" -f ./chart/values.yaml --set gitCommit=$GIT_COMMIT --set buildNumber=$BUILD_NUMBER ./chart
-#helm install node-app-api --namespace "$NAMESPACE" -f ./chart/values.yaml --set gitCommit=$GIT_COMMIT --set buildNumber=$BUILD_NUMBER ./chart
+kubectl apply -f ${SCRIPT_PATH}/chart/namespace.yaml
+helm upgrade node-app-api --namespace "$NAMESPACE" --install -f ${SCRIPT_PATH}/chart/values.yaml --set gitCommit=$GIT_COMMIT --set buildNumber=$BUILD_NUMBER ${SCRIPT_PATH}/chart
 
 echo "Done!"

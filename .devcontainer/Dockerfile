@@ -6,6 +6,7 @@ FROM ubuntu:${OS_VERSION} AS base
 # owned by your account
 ARG HOST_USER_UID=1000
 ARG HOST_USER_GID=1000
+ARG USER_NAME=devuser
 
 USER root
 
@@ -13,8 +14,12 @@ WORKDIR /devops
 
 # Create non-root user
 RUN set -ex \
-    && groupadd -g $HOST_USER_GID devuser \
-    && useradd -lm -u $HOST_USER_UID -g $HOST_USER_GID devuser
+  && groupadd -g $HOST_USER_GID $USER_NAME \
+  && useradd -lm -u $HOST_USER_UID -g $HOST_USER_GID $USER_NAME
+# Create docker group
+RUN set -ex \
+  && groupadd docker \
+  && usermod -aG docker $USER_NAME
 
 # Install base packages
 RUN set -ex \
@@ -30,6 +35,7 @@ RUN set -ex \
     software-properties-common \
     sudo \
     tmux \
+    telnet \
     tree \
     vim \
     unzip
@@ -116,5 +122,9 @@ RUN curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases
  && sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd \
  && rm argocd-linux-amd64
 
-# TODO: If run as root then npm doesn't work, if run as user then nested docker doesn't work (for SQL and API image builds)
-#USER devuser
+# Install MS SQL CLI
+RUN apt install -y python3-pip \
+ && pip install mssql-cli \
+ && sed -i 's/python/python3/g' /usr/local/bin/mssql-cli
+
+USER $USER_NAME
