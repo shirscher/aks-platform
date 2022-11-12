@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../../app.module';
+import { AppModule } from '../app.module';
 import { SqlHealthCheckProvider } from './SqlHealthCheckProvider'
 
 describe('SqlHealthCheckProvider', () => {

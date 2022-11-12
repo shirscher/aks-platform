@@ -1,7 +1,7 @@
 import { DataSource } from "typeorm"
 import { config } from 'dotenv';
 import { ConfigService } from "@nestjs/config";
-import DataSourceOptionsFactory from "./src/infra/data/DataSourceOptionsFactory"
+import DataSourceOptionsFactory from "./src/data/DataSourceOptionsFactory"
 
 // Make sure we pull config settings from the environment and .env file when working locally
 config();

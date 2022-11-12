@@ -1,5 +1,5 @@
 import { ConfigService } from "@nestjs/config";
-import { stringify } from "querystring";
+import { join } from "path";
 import { DataSourceOptions } from "typeorm";
 
 export default function DataSourceOptionsFactory(configService: ConfigService): DataSourceOptions {
@@ -39,6 +39,7 @@ export default function DataSourceOptionsFactory(configService: ConfigService): 
         authentication: authentication,
         extra: {
             trustServerCertificate: true
-        }
+        },
+        entities: [join(__dirname, '../', '**', '*.entity.{ts,js}')] 
     };
 }

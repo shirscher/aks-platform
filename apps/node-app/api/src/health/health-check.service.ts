@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { HealthCheckResponse } from './HealthCheckResponse';
+import { HealthCheckResponse } from './health-check-response.dto';
 import { HealthCheckResult } from './HealthCheckResult';
-import { HealthStatus } from './HealthStatus';
+import { HealthStatus } from './health-status.enum';
 import { IHealthCheckProvider } from './IHealthCheckProvider';
 
 @Injectable()
@@ -27,11 +27,11 @@ export class HealthCheckService {
     }
 
     private getOverallStatus(results: HealthCheckResult[]): HealthStatus {
-        if (results.some(r => r.status == "Unhealthy"))
-            return "Unhealthy";
-        if (results.some(r => r.status == "Degraded"))
-            return "Degraded";
-        return "Healthy";
+        if (results.some(r => r.status == HealthStatus.Unhealthy))
+            return HealthStatus.Unhealthy;
+        if (results.some(r => r.status == HealthStatus.Degraded))
+            return HealthStatus.Degraded;
+        return HealthStatus.Healthy;
     }
 }
 

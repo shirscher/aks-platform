@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ValuesModule } from './api/values/values.module';
-import { SystemModule } from './api/system/system.module';
+import { ValuesModule } from './values/values.module';
+import { SystemModule } from './system/system.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import TypeOrmModuleFactory from './infra/data/TypeOrmModuleFactory';
+import TypeOrmModuleFactory from './data/TypeOrmModuleFactory';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import TypeOrmModuleFactory from './infra/data/TypeOrmModuleFactory';
       inject: [ConfigService]
     }),
     ValuesModule,
-    SystemModule]
+    SystemModule,
+    HealthModule]
 })
 export class AppModule {}

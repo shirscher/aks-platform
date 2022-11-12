@@ -1,20 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { HealthCheckResult } from "src/domain/health/HealthCheckResult";
-import { IHealthCheckProvider } from "src/domain/health/IHealthCheckProvider";
+import { HealthCheckResult } from "src/health/HealthCheckResult";
+import { IHealthCheckProvider } from "src/health/IHealthCheckProvider";
 import { ConfigService } from "@nestjs/config";
 import { EntityManager } from "typeorm";
-import TypeOrmModuleFactory from "./TypeOrmModuleFactory";
-
+import TypeOrmModuleFactory from "../data/TypeOrmModuleFactory";
+import { HealthStatus } from "src/health/health-status.enum";
 
 @Injectable()
 export class SqlHealthCheckProvider implements IHealthCheckProvider {
     readonly DEFAULT_QUERY = "SELECT @@VERSION";
-
-    /**
-     * Creates a new SqlHealthCheck
-     */
-    // constructor(private configService: ConfigService) {
-    // }
 
     constructor(
         private configService: ConfigService,
@@ -46,7 +40,7 @@ export class SqlHealthCheckProvider implements IHealthCheckProvider {
                     results: result, // rows.map(r => r.map(c => c.value)),
                     config: optionsCopy
                 },
-                status: "Healthy"
+                status: HealthStatus.Healthy
             };
         } catch (err) {
             return {
@@ -55,7 +49,7 @@ export class SqlHealthCheckProvider implements IHealthCheckProvider {
                 data: {
                     config: options
                 },
-                status: "Unhealthy"
+                status: HealthStatus.Unhealthy
             }
         }
     }

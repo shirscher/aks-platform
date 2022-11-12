@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SystemInfoResponse } from './SystemInfoResponse';
+import { SystemInfoResponse } from './system-info-response.dto';
 import * as os from "os";
 import axios from "axios";
 

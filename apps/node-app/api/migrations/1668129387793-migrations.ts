@@ -11,12 +11,24 @@ export class migrations1668129387793 implements MigrationInterface {
                         name: "Key",
                         type: "varchar",
                         length: "50",
-                        isPrimary: true
+                        isPrimary: true,
+                        isNullable: false
                     }),
                     new TableColumn({
                         name: "Value",
                         type: "varchar",
-                        length: "100"
+                        length: "100",
+                        isNullable: false
+                    }),
+                    new TableColumn({
+                        name: "CreateUtcTimestamp",
+                        type: "datetimeoffset",
+                        isNullable: false
+                    }),
+                    new TableColumn({
+                        name: "UpdateUtcTimestamp",
+                        type: "datetimeoffset",
+                        isNullable: false
                     })
                 ]
             })
