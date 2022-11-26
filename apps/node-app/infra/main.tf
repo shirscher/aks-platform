@@ -30,6 +30,10 @@ module "managed_identity" {
 #  source = "./static-web-storage"  
 #}
 
+#module "key_vault" {
+#  source = "./key-vault"
+#}
+
 #module "app_insights" {
-#
+#  source = "./app-insights"
 #}

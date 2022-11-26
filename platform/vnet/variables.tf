@@ -20,7 +20,7 @@ variable "vnet_address_space" {
   type = list(string)
 }
 
-variable "appgateway_subnet_prefix" {
+variable "app_gateway_subnet_prefix" {
   type = string
 }
 

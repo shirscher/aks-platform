@@ -20,6 +20,20 @@ spec:
           image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.buildNumber }}"
           ports:
             - containerPort: {{ .Values.port }}
+          env:
+            - name: K8S_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: K8S_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: K8S_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            # TODO: More?
           envFrom:
             - configMapRef:
                 name: {{ .Chart.Name }}-configmap

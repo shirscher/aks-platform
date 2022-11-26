@@ -32,6 +32,7 @@ RUN set -ex \
     gnupg \
     lsb-release \ 
     jq \
+    ping \
     software-properties-common \
     sudo \
     tmux \

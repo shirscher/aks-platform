@@ -31,11 +31,11 @@ resource "azurerm_network_watcher" "network_watcher" {
 #
 # Subnets
 #
-resource "azurerm_subnet" "appgateway_subnet" {
+resource "azurerm_subnet" "app_gateway_subnet" {
   name                 = "AppGatewaySubnet"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = [var.appgateway_subnet_prefix]
+  address_prefixes     = [var.app_gateway_subnet_prefix]
 }
 
 resource "azurerm_subnet" "private_subnet" {

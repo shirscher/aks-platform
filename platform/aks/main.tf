@@ -24,21 +24,19 @@ resource "azurerm_kubernetes_cluster" "aks" {
   workload_identity_enabled = true
   oidc_issuer_enabled = true
 
+  # Default system node pool
   default_node_pool {
-    # ignore_changes = [ 
-    #   node_count # If auto-scaling is enabled, would want to ignore node count changes
-    # ]
-
-    name           = "default"
-    node_count     = 2
-    vm_size        = "standard_b4ms"
+    name           = "systemnodes"
+    node_count     = 1
+    vm_size        = "standard_a2_v2"
     vnet_subnet_id = var.nodepool_subnet_id
 
     enable_auto_scaling = false
-    # min_count           = 2
-    # max_count           = 5
-    # auto_scaler_profile {
-    # }
+
+    # Make sure this node pool only schedules system pods
+    # Adds the "CriticalAddonsOnly=true:NoSchedule" taint, note you can't
+    # add it directly to the node_taints list: https://github.com/hashicorp/terraform-provider-azurerm/issues/9183
+    only_critical_addons_enabled = true 
   }
 
   identity {
@@ -59,6 +57,41 @@ resource "azurerm_kubernetes_cluster" "aks" {
     log_analytics_workspace_id = var.log_analytics_workspace_id
   }
 
+  tags = {
+    Environment = var.environment.name
+  }
+}
+
+# User node pool
+resource "azurerm_kubernetes_cluster_node_pool" "user_node_pool" {
+  name                  = "usernodes"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+  mode                  = "User"
+
+  node_count     = 2
+  vm_size        = "standard_a2_v2"
+  vnet_subnet_id = var.nodepool_subnet_id
+
+  # TODO: Need to request quota increase before this will work
+  #priority        = "Spot"
+  #eviction_policy = "Delete"
+  #spot_max_price  = ".05" # standard_a2_v2 spot pricing usually under .015
+  #node_labels     = {
+  #  "kubernetes.azure.com/scalesetpriority" = "spot"
+  #}
+  #node_taints     = [
+  #  "kubernetes.azure.com/scalesetpriority=spot:NoSchedule"
+  #]
+
+  # ignore_changes = [ 
+  #   node_count # If auto-scaling is enabled, would want to ignore node count changes
+  # ]
+  enable_auto_scaling = false
+  # min_count           = 2
+  # max_count           = 5
+  # auto_scaler_profile {
+  # }
+  
   tags = {
     Environment = var.environment.name
   }

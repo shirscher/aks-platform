@@ -1,3 +1,7 @@
+module "globals" {
+  source = ./globals
+}
+
 module "budgeting" {
   source = "./budgeting"
 }
@@ -26,7 +30,7 @@ module "vnet" {
   department  = var.department
 
   vnet_address_space       = var.vnet_address_space
-  appgateway_subnet_prefix = var.appgateway_subnet_prefix
+  app_gateway_subnet_prefix = var.app_gateway_subnet_prefix
   apimgmt_subnet_prefix    = var.apimgmt_subnet_prefix
   bastion_subnet_prefix    = var.bastion_subnet_prefix
   private_subnet_prefix    = var.private_subnet_prefix
@@ -53,11 +57,23 @@ module "aks" {
   docker_bridge_cidr = var.docker_bridge_cidr
 }
 
-module "aks-config" {
+module "ingress_nginx" {
   depends_on = [module.aks]
-  source     = "./aks-config"
+  source     = "./ingress_nginx"
+
+  aks_cluster_identity_principal_id = module.aks.cluster_identity_principal_id
+  node_pool_subnet_id               = module.vnet.aks_node_subnet_id
 }
 
-# module "api_gateway"
+module "app_gateway" {
+  source = "./app_gateway"
+
+  location            = var.location
+  resource_group_name = "rg-omni-network-p01"
+  app_gateway_name    = local.app_gateway_name
+  subnet_id           = module.vnet.app_gateway_subnet_id
+  load_balancer_ip    = module.ingress_nginx.load_balancer_ip
+}
+
 # module "api_management_internal"
 # module "api_management_external"
